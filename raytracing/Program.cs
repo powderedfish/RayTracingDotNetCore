@@ -16,32 +16,37 @@ namespace RayTracing
         {
             Vec3 oc = r.Origin - centre;
             double a = r.Direction.Dot(r.Direction);
-            double b = 2.0d * r.Direction.Dot(oc);
+            double halfB = r.Direction.Dot(oc);
             double c = oc.Dot(oc) - radius * radius;
 
-            double discriminant = b * b - 4 * a * c;
+            double discriminant = halfB * halfB - a * c;
             
             if(discriminant < 0)
             {
                 return -1;
             }
 
-            return (-b - discriminant) / (2d * a);
+            return (-halfB - Math.Sqrt(discriminant)) / a;
         }
 
-        static Colour3 RayColour(Ray r)
+        static Colour3 RayColour(Ray r, IHitable world)
         {
 
-            Point3 centre = new Point3(0, 0, -1);
-            double t = HitSphere(centre , 0.5, r);
-            if (t > 0)
+            HitRecord rec;
+            if (world.Hit(r, 0, double.MaxValue, out rec))
             {
-                Vec3 normal = (r.At(t) - centre).UnitVector();
-                return new Colour3(normal.X + 1,  normal.Y + 1, normal.Z + 1) * 0.5;
+                return new Colour3(rec.Normal.X + 1, rec.Normal.Y + 1, rec.Normal.Z + 1) * 0.5;
             }
+            //double d = HitSphere(new Point3(0, 0, -1), 0.5, r);
+            //if (d > 0 )
+            //{
+            //    Vec3 normal = (r.At(d) - new Point3(0, 0, -1)).UnitVector();
+            //    return new Colour3(normal.X + 1, normal.Y + 1, normal.Z + 1) * 0.5;
+            //}
+
 
             Vec3 unitDirection = r.Direction.UnitVector();
-            t = 0.5 * (unitDirection.Y + 1.0);
+            double t = 0.5 * (unitDirection.Y + 1.0);
             return (1.0 - t) * new Colour3(1.0, 1.0, 1.0) + t * new Colour3(0.5, 0.7, 1.0);
         }
 
@@ -61,6 +66,10 @@ namespace RayTracing
             FileStream fs = new FileStream("./output.ppm", FileMode.Create);
             StreamWriter sw = new StreamWriter(fs, Encoding.ASCII);
 
+            HitableList world = new HitableList();
+            world.Add(new Sphere(new Point3(0, 0, -1), 0.5));
+            world.Add(new Sphere(new Point3(0, -100.5d, -1), 100));
+
             sw.WriteLine("P3");
             sw.WriteLine(_imageWidth + " " + _imageHeight);
             sw.WriteLine("256");
@@ -73,7 +82,7 @@ namespace RayTracing
                     double u = (double)j / (_imageWidth - 1);
                     double v = (double)i / (_imageHeight - 1);
 
-                    Colour3 colour = RayColour(new Ray(origin, lowerLeftCorner + u * horizontal + v * virtical - origin));
+                    Colour3 colour = RayColour(new Ray(origin, lowerLeftCorner + u * horizontal + v * virtical - origin), world);
 
                     sw.Write(colour.ToString());
                 }
