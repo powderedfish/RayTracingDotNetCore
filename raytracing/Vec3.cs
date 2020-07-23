@@ -101,13 +101,35 @@ namespace RayTracing
         public double G { get { return _e[1]; } set { _e[1] = value; } }
         public double B { get { return _e[2]; } set { _e[2] = value; } }
 
-        public Colour3() : base() { }
+        public int SamplePerPixel { get; }
 
-        public Colour3(double r, double g, double b):base(r, g, b) { }
+        public Colour3() : base() 
+        {
+            SamplePerPixel = 100;
+        }
+
+        public Colour3(double r, double g, double b):base(r, g, b) 
+        {
+            SamplePerPixel = 100;
+        }
 
         public override string ToString()
         {
-            return $"{(int)(255.999 * R)} {(int)(255.999 * G)} {(int)(255.999 * B)} ";
+            double r = R;
+            double g = G;
+            double b = B;
+
+            double scale = 1d / SamplePerPixel;
+
+            r *= scale;
+            g *= scale;
+            b *= scale;
+
+            r = Math.Clamp(r, 0.0d, 0.999d);
+            g = Math.Clamp(g, 0.0d, 0.999d);
+            b = Math.Clamp(b, 0.0d, 0.999d);
+
+            return $"{(int)(255.999 * r)} {(int)(255.999 * g)} {(int)(255.999 * b)} ";
         }
 
         public static Colour3 operator*(Colour3 c, double t)

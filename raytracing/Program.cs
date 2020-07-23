@@ -61,6 +61,9 @@ namespace RayTracing
             world.Add(new Sphere(new Point3(0, 0, -1), 0.5));
             world.Add(new Sphere(new Point3(0, -100.5d, -1), 100));
 
+            Camera cam = new Camera();
+            Random ran = new Random();
+
             sw.WriteLine("P3");
             sw.WriteLine(_imageWidth + " " + _imageHeight);
             sw.WriteLine("256");
@@ -68,13 +71,18 @@ namespace RayTracing
             for(int i = _imageHeight; i >= 0 ; i--)
             {
                 Console.WriteLine("Scanlines remaining: {0}", i);
-                for(int j = 0; j < _imageWidth; j++)
+                for (int j = 0; j < _imageWidth; j++)
                 {
-                    double u = (double)j / (_imageWidth - 1);
-                    double v = (double)i / (_imageHeight - 1);
+                    Colour3 colour = new Colour3(0 ,0 ,0);
+                    for (int k = 0; k < colour.SamplePerPixel; k++)
+                    {
 
-                    Colour3 colour = RayColour(, world);
+                        double u = (j + ran.NextDouble()) / (_imageWidth - 1);
+                        double v = (i + ran.NextDouble()) / (_imageHeight - 1);
+                        Ray r = cam.GetRay(u, v);
+                        colour += RayColour(r, world);
 
+                    }
                     sw.Write(colour.ToString());
                 }
                 sw.WriteLine();

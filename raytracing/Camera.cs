@@ -26,9 +26,9 @@ namespace RayTracing
 
         }
 
-        public Ray GetRay(double x, double y)
+        public Ray GetRay(double u, double v)
         {
-            return new Ray(_origin, _lowerLeftCorner + x * _horizontal + y * _vertical - _origin);
+            return new Ray(_origin, _lowerLeftCorner + u * _horizontal + v * _vertical - _origin);
         }
     }
 }
