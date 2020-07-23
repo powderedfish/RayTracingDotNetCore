@@ -11,6 +11,7 @@ namespace RayTracing
         const double _aspactRatio = 16.0d / 9.0d;
         const int _imageWidth = 1024;
         const int _imageHeight = (int)(_imageWidth / _aspactRatio);
+        const int _maxDepth = 50;
 
         static double HitSphere(Point3 centre, double radius, Ray r)
         {
@@ -29,21 +30,24 @@ namespace RayTracing
             return (-halfB - Math.Sqrt(discriminant)) / a;
         }
 
-        static Colour3 RayColour(Ray r, IHitable world)
+        static Colour3 RayColour(Ray r, IHitable world, int depth)
         {
+
+            if(depth <= 0)
+            {
+                return new Colour3(0, 0, 0);
+            }
 
             HitRecord rec;
             if (world.Hit(r, 0, double.MaxValue, out rec))
             {
-                return new Colour3(rec.Normal.X + 1, rec.Normal.Y + 1, rec.Normal.Z + 1) * 0.5;
+                Point3 target = rec.Point + rec.Normal;
+                Point3 p = Point3.RandomInUnitSphere();
+                target.X += p.X;
+                target.Y += p.Y;
+                target.Z += p.Z;
+                return 0.5 * RayColour(new Ray(rec.Point, target - rec.Point), world, --depth);
             }
-            //double d = HitSphere(new Point3(0, 0, -1), 0.5, r);
-            //if (d > 0 )
-            //{
-            //    Vec3 normal = (r.At(d) - new Point3(0, 0, -1)).UnitVector();
-            //    return new Colour3(normal.X + 1, normal.Y + 1, normal.Z + 1) * 0.5;
-            //}
-
 
             Vec3 unitDirection = r.Direction.UnitVector();
             double t = 0.5 * (unitDirection.Y + 1.0);
@@ -62,7 +66,7 @@ namespace RayTracing
             world.Add(new Sphere(new Point3(0, -100.5d, -1), 100));
 
             Camera cam = new Camera();
-            Random ran = new Random();
+            Random rand = new Random();
 
             sw.WriteLine("P3");
             sw.WriteLine(_imageWidth + " " + _imageHeight);
@@ -77,10 +81,10 @@ namespace RayTracing
                     for (int k = 0; k < colour.SamplePerPixel; k++)
                     {
 
-                        double u = (j + ran.NextDouble()) / (_imageWidth - 1);
-                        double v = (i + ran.NextDouble()) / (_imageHeight - 1);
+                        double u = (j + rand.NextDouble()) / (_imageWidth - 1);
+                        double v = (i + rand.NextDouble()) / (_imageHeight - 1);
                         Ray r = cam.GetRay(u, v);
-                        colour += RayColour(r, world);
+                        colour += RayColour(r, world, _maxDepth);
 
                     }
                     sw.Write(colour.ToString());

@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Drawing;
 
 namespace RayTracing
 {
+    /// <summary>
+    /// vec3 base class
+    /// </summary>
     public abstract class Vec3Base
     {
         protected double[] _e;
@@ -17,6 +21,9 @@ namespace RayTracing
         }
     }
 
+    /// <summary>
+    /// represent vector
+    /// </summary>
     public class Vec3: Vec3Base
     {
         public double X { get { return _e[0]; } set { _e[0] = value; } }
@@ -66,6 +73,21 @@ namespace RayTracing
             return a * (1 / b);
         }
 
+        public static Vec3 RandomVec3()
+        {
+            Random rand = new Random();
+            return new Vec3(rand.NextDouble(), rand.NextDouble(), rand.NextDouble());
+        }
+
+        public static Vec3 RandomVec3(double min, double max)
+        {
+            Random rand = new Random();
+            double x = min + (max - min) * rand.NextDouble();
+            double y = min + (max - min) * rand.NextDouble();
+            double z = min + (max - min) * rand.NextDouble();
+            return new Vec3(x, y, z);
+        }
+
         public double this[int key]
         {
             get { return _e[key]; }
@@ -95,6 +117,9 @@ namespace RayTracing
         }
     }
 
+    /// <summary>
+    /// represent colour
+    /// </summary>
     public class Colour3 : Vec3Base
     {
         public double R { get { return _e[0]; } set { _e[0] = value; } }
@@ -147,6 +172,10 @@ namespace RayTracing
             return new Colour3(c1.R + c2.R, c1.G + c2.G, c1.B + c2.B);
         }
     }
+
+    /// <summary>
+    /// represent point
+    /// </summary>
     public class Point3 : Vec3Base
     {
         public double X { get { return _e[0]; } set { _e[0] = value; } }
@@ -156,6 +185,11 @@ namespace RayTracing
         public Point3():base(){ }
 
         public Point3(double x, double y, double z) : base(x, y, z){}
+
+        public static explicit operator Point3(Vec3 vec)
+        {
+            return new Point3(vec.X, vec.Y, vec.Z);
+        }
 
         public static Point3 operator+(Point3 p, Vec3 u)
         {
@@ -172,5 +206,20 @@ namespace RayTracing
             return new Vec3(p1.X - p2.X, p1.Y - p2.Y, p1.Z - p2.Z);
         }
 
+        public static Point3 RandomInUnitSphere()
+        {
+            Point3 p = null;
+            while (true)
+            {
+                Vec3 temp = Vec3.RandomVec3(-1, 1);
+
+                if (temp.LengthSquare() >= 1)
+                    continue;
+                p = (Point3)temp;
+
+                return p;
+            }
+        }
+    
     }
 }
