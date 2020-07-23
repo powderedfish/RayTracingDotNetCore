@@ -7,8 +7,8 @@ namespace RayTracing
 {
     class Program
     {
-        const double _aspactRatio = 16.0d / 9.0d;
 
+        const double _aspactRatio = 16.0d / 9.0d;
         const int _imageWidth = 1024;
         const int _imageHeight = (int)(_imageWidth / _aspactRatio);
 
@@ -52,16 +52,7 @@ namespace RayTracing
 
         static int Main(string[] args)
         {
-            double viewportHeight = 2.0d;
-            double viewportWidth = viewportHeight * _aspactRatio;
-            double focalLength = 1.0d;
-
-            Point3 origin = new Point3(0, 0, 0);
-
-            Vec3 horizontal = new Vec3(viewportWidth, 0, 0);
-            Vec3 virtical = new Vec3(0, viewportHeight, 0);
-
-            Point3 lowerLeftCorner = origin - horizontal / 2 - virtical / 2 - new Vec3(0, 0, focalLength);
+            
 
             FileStream fs = new FileStream("./output.ppm", FileMode.Create);
             StreamWriter sw = new StreamWriter(fs, Encoding.ASCII);
@@ -82,7 +73,7 @@ namespace RayTracing
                     double u = (double)j / (_imageWidth - 1);
                     double v = (double)i / (_imageHeight - 1);
 
-                    Colour3 colour = RayColour(new Ray(origin, lowerLeftCorner + u * horizontal + v * virtical - origin), world);
+                    Colour3 colour = RayColour(, world);
 
                     sw.Write(colour.ToString());
                 }
