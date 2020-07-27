@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RayTracing.Materials;
 
 namespace RayTracing
 {
@@ -9,15 +10,18 @@ namespace RayTracing
         public Point3 Centre { get; set; }
         public double Radius { get; set; }
 
+        public Material Mat { get; set; }
+
         public Sphere()
         {
 
         }
 
-        public Sphere(Point3 cen, double r)
+        public Sphere(Point3 cen, double r, Material mat)
         {
             Centre = cen;
             Radius = r;
+            Mat = mat;
         }
 
         public bool Hit(Ray r, double tMin, double tMax, out HitRecord rec)
@@ -42,6 +46,7 @@ namespace RayTracing
                     rec.Point = r.At(rec.T);
                     Vec3 outwardNormal = (rec.Point - Centre).UnitVector();
                     rec.SetFaceNormal(r, outwardNormal);
+                    rec.Mat = Mat;
                     return true;
                 }
 
@@ -54,6 +59,7 @@ namespace RayTracing
                     rec.Point = r.At(rec.T);
                     Vec3 outwardNormal = (rec.Point - Centre).UnitVector();
                     rec.SetFaceNormal(r, outwardNormal);
+                    rec.Mat = Mat;
                     return true;
                 }
             }

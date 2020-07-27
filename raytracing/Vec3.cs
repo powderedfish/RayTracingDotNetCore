@@ -88,6 +88,31 @@ namespace RayTracing
             return new Vec3(x, y, z);
         }
 
+        public static Vec3 RandomUnitVector()
+        {
+            Random rand = new Random();
+
+            double a = (2 * Math.PI) * rand.NextDouble();
+            double z = -1 + 2 * rand.NextDouble();
+            double r = Math.Sqrt(1 - z * z);
+
+            return new Vec3(r * Math.Cos(a), r * Math.Sin(a), z);
+
+        }
+
+        public static Vec3 RandomInHemisphere(Vec3 normal)
+        {
+            Vec3 vec = RandomUnitVector();
+            if(vec.Dot(normal) > 0.0d)
+            {
+                return vec;
+            }
+            else
+            {
+                return -vec;
+            }
+        }
+
         public double this[int key]
         {
             get { return _e[key]; }
@@ -114,6 +139,11 @@ namespace RayTracing
         public Vec3 UnitVector()
         {
             return this / Length;
+        }
+
+        public Vec3 Reflect(Vec3 normal)
+        {
+            return this - 2 * Dot(normal) * normal; 
         }
     }
 
@@ -146,9 +176,9 @@ namespace RayTracing
 
             double scale = 1d / SamplePerPixel;
 
-            r *= scale;
-            g *= scale;
-            b *= scale;
+            r = Math.Sqrt(scale * r);
+            g = Math.Sqrt(scale * g);
+            b = Math.Sqrt(scale * b);
 
             r = Math.Clamp(r, 0.0d, 0.999d);
             g = Math.Clamp(g, 0.0d, 0.999d);
@@ -170,6 +200,11 @@ namespace RayTracing
         public static Colour3 operator+(Colour3 c1, Colour3 c2)
         {
             return new Colour3(c1.R + c2.R, c1.G + c2.G, c1.B + c2.B);
+        }
+
+        public static Colour3 operator*(Colour3 c1, Colour3 c2)
+        {
+            return new Colour3(c1.R * c2.R, c1.G * c2.G, c1.B * c2.B);
         }
     }
 

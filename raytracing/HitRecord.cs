@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RayTracing.Materials;
 
 namespace RayTracing
 {
@@ -10,6 +11,7 @@ namespace RayTracing
         public Vec3 Normal { get; set; }
         public double T { get; set; }
         public bool FrontFace {get; set; }
+        public Material Mat { get; set; }
 
         public void SetFaceNormal(Ray r, Vec3 outwardNormal)
         {
